@@ -1,0 +1,472 @@
+# -*- coding: utf-8 -*-
+
+<MyScreenManager>:
+    id: scr_mng
+    StartScreen:
+        id: start
+    NoInternetScreen:
+        id: noInternet
+    NeuerUserScreen:
+        id: neuerUser
+    KalenderScreen:
+        id: kalenderscreen
+    NeuerEintragScreen:
+        id: neuerEintrag
+    VorlagenScreen:
+        id: vorlagenuebersicht
+    DiensteScreen:
+        id: dienstescreen
+
+<StartScreen>:
+    name: "start"
+    Image:
+        source: 'Ladescreen.jpg'
+        size_hint_y: 1
+        keep_ratio: False
+        allow_stretch: True
+
+<NoInternetScreen>:
+    name: 'noInternet'
+    Image:
+        source: 'Ladescreen.jpg'
+        size_hint_y: 1
+        keep_ratio: False
+        allow_stretch: True
+
+
+<NeuerUserScreen>:
+    name:'neuerUser'
+    id: neuerUser
+
+    MDTopAppBar:
+        md_bg_color: 0, 0, 1, 1
+        title: "Kalender"
+        pos_hint: {"top": 1}
+        elevation: 0
+        anchor_title: "center"
+    BoxLayout:
+        orientation: "vertical"
+        padding: "16dp"
+        spacing: "40dp"
+        size_hint_y: None
+        height: self.minimum_height
+        pos_hint: {"center_y": .6}
+
+        MDLabel:
+            text: "Login"
+            halign: "center"
+            font_style: "H4"
+            size_hint_y: None
+
+        MDTextField:
+            id: username
+            hint_text: "Benutzername "
+            helper_text: "Pflichtfeld"
+            icon_right: 'account'
+            helper_text_mode: "on_focus"
+            required: True
+
+    MDRaisedButton:
+        text: "Anmelden"
+        pos_hint: {"center_x": 0.5, "center_y": 0.2}
+        on_release: root.create_new_user()
+
+<KalenderScreen>:
+    id: kalender
+    name: 'kalender'
+
+    BoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            md_bg_color: 0, 0, 1, 1
+            id: toptoolbar
+            title: "Kalender"
+            left_action_items: [['menu', lambda x: nav_drawer.set_state("open")]]
+            right_action_items:[['plus-circle', lambda x: root.add_new_entry()]]
+
+        Kalenderansicht:
+            orientation:'vertical'
+
+            MDBoxLayout:
+                id: header
+                orientation:'horizontal'
+                size_hint_y: .1
+
+                MDRectangleFlatButton:
+                    id: previous_month
+                    text: "<"
+                    font_size: '20dp'
+                    size_hint: (.2, 1)
+                    on_press: root.move_previous_month()
+
+                MonthYearLabel:
+                    id: current_month
+                    text: self.month_year_text
+                    font_size: '20dp'
+                    size_hint: (.6, 1)
+                    halign: "center"
+                    myroot: root
+
+                MDRectangleFlatButton:
+                    id: next_month
+                    text: ">"
+                    font_size: '20dp'
+                    size_hint: (.2, 1)
+                    on_press: root.move_next_month()
+
+            MDBoxLayout:
+                size_hint_y: .04
+                MDLabel:
+                    text:"Mo"
+                    halign:"center"
+                MDLabel:
+                    text:"Di"
+                    halign:"center"
+                MDLabel:
+                    text:"Mi"
+                    halign:"center"
+                MDLabel:
+                    text:"Do"
+                    halign:"center"
+                MDLabel:
+                    text:"Fr"
+                    halign:"center"
+                MDLabel:
+                    text:"Sa"
+                    halign:"center"
+                MDLabel:
+                    text:"So"
+                    halign:"center"
+
+            MDGridLayout:
+                cols: 7
+                id: cal
+                size_hint_y: .7
+                spacing: "7dp"
+
+    MDNavigationDrawer:
+        id: nav_drawer
+        elevation: 6
+
+        ContentNavigationDrawer:
+            orientation: "vertical"
+
+            MDBoxLayout:
+                orientation: "vertical"
+                padding: "8dp"
+                spacing: "8dp"
+
+				MDLabel:
+					text: "Einstellungen"
+					size_hint_y: None
+					pos_hint: {"center_x":.5}
+					halign: "center"
+
+                MDTextField:
+                    id: schriftgroesse
+                    text: "18"
+                    size_hint_x: 1
+                    width: .8
+                    pos_hint: {"center_x": .5}
+
+                MDRectangleFlatButton:
+                    text: "Schriftgröße setzen"
+                    on_release:
+                        root.ids.nav_drawer.set_state("close")
+                        app.root.settings.setsave("schriftgroesse", schriftgroesse.text)
+                        app.root.setschriftgroesse(schriftgroesse.text)
+                        root.populate_calendar()
+
+                MDList:
+                    id: colorpickerlist
+
+
+                MDRectangleFlatButton:
+                    text: "Vorlagen bearbeiten"
+                    on_release: root.changescreen("vorlagenuebersicht")
+
+                Widget:
+
+                MDRectangleFlatButton:
+                    text: "Logout"
+                    on_release: root.changescreen("neuerUser")
+
+
+<Kalendercard>:
+    id: calcard
+    orientation: 'vertical'
+    pos_hint: {"center_x": .5, "center_y": .5}
+    border_radius: 8
+    radius: [10]
+    elevation: 0
+    on_press: root.clicked()
+
+    MDLabel:
+        id: day
+        canvas.before:
+            Color:
+                rgba: 1,1,0,.1
+            RoundedRectangle:
+                pos: self.pos
+                size: self.size
+
+        text: "title"
+        halign: "center"
+        size_hint_y: None
+        height: self.texture_size[1]
+
+    MDSeparator:
+        height: "1dp"
+
+    MDBoxLayout:
+        orientation: "vertical"
+        id: dienste
+        pos_hint: {"center_x": .5}
+
+
+<NeuerEintragScreen>:
+    name:'neuerEintrag'
+    id: neuerEintrag
+
+    BoxLayout:
+        orientation: "vertical"
+        spacing: 15
+
+        MDTopAppBar:
+            md_bg_color: 0, 0, 1, 1
+            title: "neuer Eintrag"
+            elevation: 0
+            anchor_title: "center"
+
+        MDRoundFlatIconButton:
+            text: "Tag auswählen"
+            id: datumwaehlen
+            pos_hint: {"center_x":.5}
+            size_hint: (.6,.3)
+            icon: "calendar"
+            on_release: root.datepicker()
+
+        MDRoundFlatIconButton:
+            pos_hint: {"center_x":.5}
+            size_hint: (.6,.3)
+            id: vorlagewaehlen
+            text: "Vorlage wählen"
+            icon: "arrow-down-drop-circle-outline"
+            on_release: root.drop()
+
+        MDRoundFlatIconButton:
+            pos_hint: {"center_x":.5}
+            size_hint: (.6,.3)
+            id: startzeit
+            text: "Startzeit"
+            icon: "clock-in"
+            on_release: root.timepicker_startzeit()
+
+        MDRoundFlatIconButton:
+            pos_hint: {"center_x":.5}
+            size_hint: (.6,.3)
+            id: endzeit
+            text: "Endzeit"
+            icon: "clock-out"
+            on_release: root.timepicker_endzeit()
+
+        MDTextField:
+            id: dienstname
+            hint_text: "Dienstbezeichnung"
+            size_hint_x: .6
+            pos_hint: {"center_x": .5, "center_y": .5}
+
+        MDRoundFlatButton:
+            text: "Als Vorlage speichern"
+            pos_hint: {"center_x": 0.5}
+            size_hint: (.4,.3)
+            on_release: root.upload_vorlage()
+
+        MDBoxLayout:
+            spacing: 15
+            padding: 20,10,20,10
+            size_hint_y: .6
+
+            MDFillRoundFlatButton:
+                text: "Abbrechen"
+                size_hint: (.8,.7)
+                on_release:
+                    root.text_zuruecksetzen()
+                    app.root.changescreen(screen="kalender", direction="right", transition="SwapTransition")
+
+            MDFillRoundFlatButton:
+                text: "Eintragen"
+                size_hint: (.8,.7)
+                on_release: root.upload_dienst()
+
+        Widget:
+            size_hint_y: .1
+
+<RightContentCls>
+    disabled: True
+
+    MDLabel:
+        text: root.text
+        font_style: "Caption"
+        size_hint_x: None
+        width: self.texture_size[0]
+        text_size: None, None
+
+<VorlagenScreen>:
+    id: vorlagenuebersicht
+    name: "vorlagenuebersicht"
+    BoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            md_bg_color: 0, 0, 1, 1
+            title: "Meine Vorlagen"
+            elevation: 0
+            anchor_title: "center"
+
+        BoxLayout:
+            orientation: "vertical"
+            padding: 20,20,20,20
+            size_hint_y: .8
+
+            ScrollView:
+                MDList:
+                    id: vorlagencontainer
+
+        BoxLayout:
+            orientation: "horizontal"
+            padding: 40,20,40,20
+            size_hint_y: .2
+
+            Widget:
+                size_hint_x: .2
+
+            MDFillRoundFlatButton:
+                text: "zurück"
+                on_release: app.root.changescreen(screen="kalender", direction="right", transition="SwapTransition")
+                size_hint: .6, .8
+
+            Widget:
+                size_hint_x: .2
+
+<Vorlage_expansion_content>:
+    adaptive_height: True
+    BoxLayout:
+        padding: 0,0,130,0
+        spacing: "8dp"
+        orientation: "horizontal"
+
+        MDRoundFlatIconButton:
+            id: startzeit
+            pos_hint: {"center_x":.5, "center_y": .5}
+            size_hint: (None,.8)
+            text: root.text
+            icon: "clock-in"
+            on_release: app.root.ids.vorlagenuebersicht.timepicker_startzeit(self)
+
+        MDRoundFlatIconButton:
+            id: endzeit
+            pos_hint: {"center_x":.5, "center_y": .5}
+            size_hint: (None,.8)
+            text: root.text
+            icon: "clock-out"
+            on_release: app.root.ids.vorlagenuebersicht.timepicker_endzeit(self)
+
+    RechteSeiteContainer:
+        id: container
+        MDIconButton:
+            icon: "content-save-move"
+            on_press: app.root.ids.vorlagenuebersicht.editvorlage(root, root.parent)
+
+        MDIconButton:
+            icon: "trash-can-outline"
+            on_press: app.root.ids.vorlagenuebersicht.deletevorlage(root, root.parent)
+
+
+<Dienstlabel>:
+    text: root.text
+    font_size: root.font_size
+    color: 0,0,0,1
+    theme_text_color: "Custom"
+
+
+<DiensteScreen>:
+    id: dienstescreen
+    name: "dienstescreen"
+    BoxLayout:
+        orientation: "vertical"
+
+        MDTopAppBar:
+            id: titel
+            md_bg_color: 0, 0, 1, 1
+            title: "Meine Vorlagen"
+            pos_hint: {"top": 1}
+            elevation: 0
+            anchor_title: "center"
+            right_action_items:[['plus-circle', lambda x: app.root.ids.kalenderscreen.add_new_entry()]]
+
+        BoxLayout:
+            orientation: "vertical"
+            padding: 20,20,20,20
+            size_hint_y: .8
+
+            ScrollView:
+                MDList:
+                    id: vorlagencontainer
+
+        BoxLayout:
+            orientation: "horizontal"
+            padding: 40,20,40,20
+            size_hint_y: .2
+
+            Widget:
+                size_hint_x: .2
+
+            MDFillRoundFlatButton:
+                text: "zurück"
+                on_release: app.root.changescreen(screen="kalender", direction="right", transition="SwapTransition")
+                size_hint: .6, .8
+
+            Widget:
+                size_hint_x: .2
+
+
+<DiensteTwoLineIconListItem>:
+    text: root.text
+    spacing: "8dp"
+    _no_ripple_effect: True
+
+    IconLeftWidget:
+        icon: "trash-can-outline"
+        on_press: root.deletedienst()
+
+
+<Usercolorslistitem>:
+    id: item
+    text: root.text
+    theme_text_color: "Custom"
+    text_color: 1,0,0,1
+    _no_ripple_effect: True
+    on_press: root.openColorpicker()
+
+    IconLeftWidget:
+        id: icon
+        icon: "circle"
+        theme_text_color: "Custom"
+        text_color: 1,0,0,1
+        on_press: root.openColorpicker()
+
+<ColorPickerCard>:
+    MDBoxLayout:
+	    orientation: "vertical"
+
+    	CustomColorPicker:
+    	    id: custom_color_picker
+	    	size_hint: 1,1
+
+	    MDRoundFlatButton:
+		    pos_hint: {"center_x": .5}
+		    text: "Übernehmen"
+		    on_release: root.hide_widget()
+
+

@@ -1,0 +1,97 @@
+<MyAppBar>:
+    BoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            md_bg_color:
+            title: "Shi'a Calendar"
+            elevation: 10
+            left_action_items: [['menu', lambda x: app.root.ids.nav_drawer.set_state('toggle')]]
+
+        Widget:
+
+<ItemDrawer>:
+    theme_text_color: "Custom"
+    on_release: self.parent.set_color_item(self)
+
+    IconLeftWidget:
+        id: icon
+        icon: root.icon
+        theme_text_color: "Custom"
+        text_color: root.text_color
+
+
+<ContentNavigationDrawer>:
+    orientation: "vertical"
+    padding: "8dp"
+    spacing: "8dp"
+
+    AnchorLayout:
+        anchor_x: "left"
+        size_hint_y: None
+        height: "300dp"
+
+        Image:
+            id: avatar
+            size_hint: 1, 1
+            source: "./logo.png"
+
+    ScrollView:
+
+        DrawerList:
+            id: md_list
+
+            ItemDrawer:
+                text: "Home"
+                icon: "home"
+                on_release:
+                    app.root.ids.sm.current = "home"
+                    app.root.ids.nav_drawer.set_state('close')
+
+            ItemDrawer:
+                text: "Settings"
+                icon: "cog"
+                on_release: app.root.ids.sm.current = "settings"
+
+            ItemDrawer:
+                text: "About"
+                icon: "information"
+                on_release: app.root.ids.sm.current = "about"
+
+
+
+Screen:
+    MDNavigationLayout:
+        MyScreenManager:
+            id: sm
+
+            Home
+            Settings_
+            About
+
+        MDNavigationDrawer:
+            id: nav_drawer
+
+            ContentNavigationDrawer:
+                id: content_drawer
+
+
+<Home>:
+    name: "home"
+    MyAppBar
+    MDLabel:
+        text:"Home Page"
+        pos_hint: {"center_x": .5, "center_y": .5}
+
+<Settings_>:
+    name: "settings"
+    MyAppBar
+    MDLabel:
+        text:"Settings Page"
+        pos_hint: {"center_x": .5, "center_y": .5}
+
+<About>:
+    name: "about"
+    MyAppBar
+    MDLabel:
+        text:"About Page"
+        pos_hint: {"center_x": .5, "center_y": .5}

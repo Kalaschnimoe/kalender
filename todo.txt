@@ -1,0 +1,29 @@
+ladescreen erstellen - done
+
+feiertage farblich markieren -- done
+
+settings in einem ordner abspeichern, damit man nach einem update die alten settings verfügbar hat - done
+
+bei farbwahl den rest deaktivieren - halbdone
+
+dienst an mehreren tagen eintragen - done
+
+heutigen tag farblich markieren
+
+nicht jedes mal einen neuen kalender zeichnen, wenn etwas upgedatet wird
+
+thema performance: 
+dienst löschen
+nächstes/vorheriges kalendermonat
+dienst hochladen (nach dem toast)
+öffnen des vorlagenscreens
+schriftgröße setzen
+appstart: 5 sekunden splash screen, 5 sekunden schwarz = 10 sekunden, ziel ca 5 sekunden
+
+
+
+NoInternetScreen und ladescreen done
+kalenderscreen
+
+vorlagen.late_init bei screenwechsel notwendig?
+start routine sollte entscheiden, welcher screen aufgerufen wird. nicht die anderen methoden!

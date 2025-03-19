@@ -19,14 +19,27 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y python3-venv libffi-dev libssl-dev
+          sudo apt install -y python3-venv libffi-dev libssl-dev openjdk-11-jdk unzip
           pip install --upgrade pip setuptools wheel cython virtualenv
 
       - name: Install Buildozer
         run: pip install buildozer
 
       - name: Set Environment Variables
-        run: echo "BUILDOZER_HOME=$(pwd)/.buildozer" >> $GITHUB_ENV
+        run: |
+          echo "BUILDOZER_HOME=$(pwd)/.buildozer" >> $GITHUB_ENV
+          echo "ANDROID_HOME=$(pwd)/android-sdk" >> $GITHUB_ENV
+          echo "PATH=$PATH:$(pwd)/android-sdk/cmdline-tools/latest/bin:$(pwd)/android-sdk/platform-tools" >> $GITHUB_ENV
+
+      - name: Install Android SDK & NDK
+        run: |
+          mkdir -p android-sdk/cmdline-tools
+          cd android-sdk/cmdline-tools
+          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip sdk-tools.zip
+          mv cmdline-tools latest
+          cd ../..
+          yes | android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$(pwd)/android-sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;23.1.7779620"
 
       - name: Build APK
         run: |

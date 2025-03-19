@@ -1,32 +1,59 @@
-# Tested: 2024/08/05
-# by Kasper Arfman
-name: Build APK
-on: [push]
+name: Build
+on:
+  push:
+    branches-ignore:
+      - data
+      - gh-pages
+    tags:
+      - '**'
+  pull_request:
+    branches-ignore:
+      - data
+      - gh-pages
+ 
 jobs:
+  # Build job. Builds app for Android with Buildozer
   build-android:
     name: Build for Android
     runs-on: ubuntu-20.04
+ 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Buildozer dependencies
+        with:
+          path: master
+           
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+          architecture: x64
+           
+      - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y git zip unzip python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev automake
-          pip install --user --upgrade Cython virtualenv
-          pip install --user --upgrade buildozer
-          echo 'export PATH=$PATH:~/.local/bin/' >> ~/.bashrc
-
-      - name: Handle Java path
-        run: |
-          export JAVA_HOME=/usr/lib/jvm/temurin-17-jdk-amd64
-          sudo update-java-alternatives --set ${JAVA_HOME}
-          export PATH=$JAVA_HOME/bin:$PATH
-          yes | buildozer -v android debug
-
+          python -m pip install --upgrade pip
+          pip install --upgrade Cython
+ 
+      - name: Build with Buildozer
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          repository_root: master
+          workdir: .
+          buildozer_version: stable
+ 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
           name: package
-          path: bin/*.apk
+          path: ${{ steps.buildozer.outputs.filename }}
+ 
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          path: data
+          ref: data # Branch name
+ 
+      - name: Push binary to data branch
+        if: github.event_name == 'push'
+        run: python master/.ci/move_binary.py "${{ steps.buildozer.outputs.filename }}" master data bin

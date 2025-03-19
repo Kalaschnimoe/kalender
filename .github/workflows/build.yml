@@ -8,26 +8,12 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set Up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.8"
-
-      - name: Install Dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y python3-venv libffi-dev libssl-dev openjdk-11-jdk unzip
-          pip install --upgrade pip setuptools wheel cython virtualenv
-
-      - name: Install Buildozer
-        run: pip install buildozer
-
+      - uses: actions/checkout@v4
       - name: Build APK
-        run: |
-          buildozer -v android debug
+        uses: digreatbrian/buildozer-action@v2
+        with:
+          python-version: 3.8
+          buildozer-cmd: buildozer -v android debug
 
       - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4

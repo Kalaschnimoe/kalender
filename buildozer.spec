@@ -37,7 +37,7 @@ version = 1.2
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy==2.0.0,https://github.com/kivymd/KivyMD/archive/master.zip,pillow
+requirements = python3,kivy==2.0.0,https://github.com/kivymd/KivyMD/archive/master.zip,sdl2_ttf==2.0.15,pillow,pymysql,numpy,plyer,easysettings
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -122,7 +122,7 @@ android.minapi = 25
 #android.ndk_path =
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-android.sdk_path = /root/.buildozer/android/platform/android-sdk
+#android.sdk_path = /root/.buildozer/android/platform/android-sdk
 
 # (str) ANT directory (if empty, it will be automatically downloaded.)
 #android.ant_path =

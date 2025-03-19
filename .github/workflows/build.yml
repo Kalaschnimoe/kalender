@@ -1,3 +1,5 @@
+name: Build Kivy APK
+
 on:
   push:
     branches: [ main ]
@@ -6,16 +8,35 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
-      - name: Build APK
-        uses: digreatbrian/buildozer-action@v2
-        with:
-          python-version: 3.8
-          buildozer_version: stable
-          buildozer-cmd: buildozer -v android debug
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Upload artifacts
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.8"
+
+      - name: Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y python3-venv libffi-dev libssl-dev
+          pip install --upgrade pip setuptools wheel cython virtualenv
+
+      - name: Install Buildozer
+        run: |
+          pip install buildozer
+          buildozer init
+
+      - name: Fix Permissions
+        run: |
+          sudo chown -R $USER:$USER /root/.buildozer || true
+
+      - name: Build APK
+        run: |
+          buildozer -v android debug
+
+      - name: Upload APK as Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: package
+          name: kivy-apk
           path: ./bin/*.apk

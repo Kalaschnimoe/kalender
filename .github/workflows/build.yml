@@ -25,7 +25,6 @@ jobs:
       - name: Install Buildozer
         run: |
           pip install buildozer
-          buildozer init
 
       - name: Fix Permissions
         run: |

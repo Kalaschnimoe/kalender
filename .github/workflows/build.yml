@@ -25,23 +25,6 @@ jobs:
       - name: Install Buildozer
         run: pip install buildozer
 
-      - name: Set Environment Variables
-        run: |
-          mkdir -p $(pwd)/.buildozer
-          echo "BUILDOZER_HOME=$(pwd)/.buildozer" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$(pwd)/android-sdk" >> $GITHUB_ENV
-          echo "PATH=$PATH:$(pwd)/android-sdk/cmdline-tools/latest/bin:$(pwd)/android-sdk/platform-tools" >> $GITHUB_ENV
-
-      - name: Install Android SDK & NDK
-        run: |
-          mkdir -p android-sdk/cmdline-tools
-          cd android-sdk/cmdline-tools
-          curl -o sdk-tools.zip https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-          unzip sdk-tools.zip
-          mv cmdline-tools latest
-          cd ../..
-          yes | android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=$(pwd)/android-sdk "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;23.1.7779620"
-
       - name: Build APK
         run: |
           buildozer -v android debug
